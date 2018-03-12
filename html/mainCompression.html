@@ -1,0 +1,364 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>mainCompression</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-30"><meta name="DC.source" content="mainCompression.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Compression Audio PAO 2017: BAERT Gaetan, QUEFFELEC Octave</a></li><li><a href="#3">Etapes Compression</a></li><li><a href="#4">ETAPE 1 : CHROMA</a></li><li><a href="#5">ETAPE 2 : clustering EM</a></li><li><a href="#6">ETAPE 3 : Compression en appliquant la dct</a></li><li><a href="#7">ETAPE 4 : Entete du fichier compresse</a></li><li><a href="#8">ETAPE 5 : Ecriture des donnees compressees</a></li></ul></div><pre class="codeinput">clear <span class="string">all</span>
+close <span class="string">all</span>
+clc
+</pre><h2>Compression Audio PAO 2017: BAERT Gaetan, QUEFFELEC Octave<a name="2"></a></h2><h2>Etapes Compression<a name="3"></a></h2><h2>ETAPE 1 : CHROMA<a name="4"></a></h2><pre class="codeinput">filename = <span class="string">'AC_DC_Back_In_Black_Official_Video_.wav'</span>;
+[f_audio,sideinfo] = wav_to_audio(<span class="string">''</span>, <span class="string">''</span>, filename);
+[donnees, fs]=audioread(filename);
+
+shiftFB = estimateTuning(f_audio,[],sideinfo);
+
+paramPitch.winLenSTMSP = 4410;
+paramPitch.shiftFB = shiftFB;
+paramPitch.visualize = 0;
+[f_pitch,sideinfo] = <span class="keyword">...</span><span class="comment">fft.wav</span>
+audio_to_pitch_via_FB(f_audio,paramPitch,sideinfo);
+
+paramCP.applyLogCompr = 0;
+paramCP.visualize = 0;
+paramCP.inputFeatureRate = sideinfo.pitch.featureRate;
+[f_CP,sideinfo] = pitch_to_chroma(f_pitch,paramCP,sideinfo);
+
+paramCLP.applyLogCompr = 1;
+paramCLP.factorLogCompr = 100;
+paramCLP.visualize = 0;
+paramCLP.inputFeatureRate = sideinfo.pitch.featureRate;
+[f_CLP,sideinfo] = pitch_to_chroma(f_pitch,paramCLP,sideinfo);
+
+paramCENS.winLenSmooth = 21;
+paramCENS.downsampSmooth = 5;
+paramCENS.visualize = 1;
+paramCENS.inputFeatureRate = sideinfo.pitch.featureRate;
+[f_CENS,sideinfo] = pitch_to_CENS(f_pitch,paramCENS,sideinfo);
+</pre><pre class="codeoutput">Computing subbands and STMSP for all pitches: (21-108):  108
+</pre><img vspace="5" hspace="5" src="mainCompression_01.png" alt=""> <h2>ETAPE 2 : clustering EM<a name="5"></a></h2><pre class="codeinput">nbclusters = 12;
+X =f_CENS' ;
+
+dim = size(X, 2);
+covar_type = <span class="string">'full'</span>; <span class="comment">%tout l'echange mais sans alterer les flux i% 'diag', 'spherical'=une seule variance of 'full'=matrice pleine</span>
+
+<span class="comment">% Creation du modele</span>
+mixgauss = gmm(dim, nbclusters, covar_type);
+
+<span class="comment">% Options pour le GMM</span>
+options = foptions;
+options(1) = 0; <span class="comment">% affichage (1) ou non (0) au fil des iterations</span>
+
+<span class="comment">% ------------- Initialisation -------------</span>
+initKmeans = 1; <span class="comment">% 1 on initialise avec quelques iterations de K-means</span>
+<span class="keyword">if</span> initKmeans
+    <span class="comment">% Initialisation des centres via Kmeans, les matrices de covariance</span>
+    <span class="comment">% sont calculees de fa???on correspondante</span>
+    options(14) = 2; <span class="comment">%</span>
+    mixgauss = gmminit(mixgauss, X, options);
+
+<span class="keyword">else</span>
+    <span class="comment">% initialisation aleatoire des centres, les matrices de covariance = I</span>
+    N = size(X, 1);
+    index = randperm(N);
+    mixgauss.centres = X(index(1:nbclusters), :);
+<span class="keyword">end</span>
+
+
+<span class="comment">% Trace des clusters et centres initiaux</span>
+M = distancegen(X, mixgauss.centres);
+clusters = affectation(X,mixgauss.centres,nbclusters);
+
+<span class="comment">% ------------- Algo EM -----------------</span>
+options(14) = 150; <span class="comment">% A single iteration</span>
+[mixgauss, ~, logvraisemblance] = gmmem(mixgauss, X, options);
+figure(2)
+plot(logvraisemblance, <span class="string">'*--'</span>), title(<span class="string">'EM : Evolution de la log vraisemblance'</span>)
+
+<span class="comment">% ------------- Affectation finale des points aux clusters -------------</span>
+<span class="comment">% calcul des proba a posteriori</span>
+probapost = gmmpost(mixgauss, X);
+<span class="comment">% affectationtout l'??change mais sans alt??rer les flux i</span>
+[~, clusters] = max(probapost, [],2);
+
+<span class="comment">% Plot des clusters</span>
+n=size(clusters,1);
+figure();
+title(<span class="string">'EM : 10 clusters'</span>)
+xlabel(<span class="string">'morceau echantillon?'</span>)
+ylabel(<span class="string">'numero des clusters'</span>)
+hold <span class="string">on</span>
+<span class="keyword">for</span> i=1:n
+    plot(i,clusters(i),<span class="string">'*r'</span>);
+<span class="keyword">end</span>
+hold <span class="string">off</span>
+</pre><pre class="codeoutput">max it mess
+</pre><img vspace="5" hspace="5" src="mainCompression_02.png" alt=""> <img vspace="5" hspace="5" src="mainCompression_03.png" alt=""> <h2>ETAPE 3 : Compression en appliquant la dct<a name="6"></a></h2><pre class="codeinput">nbechant = size(X, 1);
+resteDernierEchant=rem(max(length(donnees)),nbechant-1);
+tailleEchant=int64(floor(max(length(donnees-resteDernierEchant))/(nbechant-1)));
+resteDernierEchant = max(length(donnees))-tailleEchant*(nbechant-1);
+
+<span class="comment">%Matrice d'echantillons</span>
+<span class="keyword">for</span> i=1:2:2*(nbechant-1)
+    Echant(:,i)=donnees(((i-1)/2)*tailleEchant+1:((i+1)/2)*tailleEchant,1);
+    Echant(:,i+1)=donnees(((i-1)/2)*tailleEchant+1:((i+1)/2)*tailleEchant,2);
+<span class="keyword">end</span>
+
+dernierEchant=donnees(max(length(donnees))-resteDernierEchant+1:length(donnees),:);
+inputSoustraction_i=[];
+Mmoy=[];
+clusters=clusters(1:length(clusters)-1); <span class="comment">% on prend pas en compte le dernier cluster du dernier echant qui est incomplet</span>
+clustersLR=[];
+
+<span class="keyword">for</span> i=1:length(clusters)
+    clustersLR=[clustersLR;clusters(i);clusters(i)];
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> i =1:nbclusters
+<span class="comment">% on choisis un cluster</span>
+cluster_i=(dct(Echant(:,find(clustersLR==i))));
+
+<span class="comment">% calcul du vecteur moyenne dans ce cluster</span>
+moyCluster_i = mean(cluster_i,2);
+Mmoy=[Mmoy moyCluster_i];
+
+<span class="comment">% soustraction entre moyenne et chaque echant du cluster</span>
+soustraction_i=cluster_i-(ones(1,size(cluster_i,2))'*moyCluster_i')';
+
+<span class="comment">% on concatene tous les chantillons en un seul vecteur</span>
+inputSoustraction_i=[inputSoustraction_i; reshape(soustraction_i,[],1)];
+<span class="keyword">end</span>
+
+<span class="comment">% on ajoute le dernier echantillon incomplet sans rien modifier</span>
+inputSoustraction_i_avecDernierEchant=[inputSoustraction_i; dct(dernierEchant(:,1));dct(dernierEchant(:,2))];
+</pre><h2>ETAPE 4 : Entete du fichier compresse<a name="7"></a></h2><pre class="codeinput">freq=int16([fs]);
+nechant=int16([nbechant]);
+taillech=int16([tailleEchant]);
+nbclusters=int16([nbclusters]);
+maxdct = max(int16(ceil(max(max(inputSoustraction_i_avecDernierEchant)))),int16(ceil(max(max(Mmoy)))));
+MmoyR=int16([(reshape(Mmoy,[],1))*double(32767/maxdct)]);
+Vclusters=int16([clustersLR]);
+
+entete=[freq;nechant;taillech;nbclusters;MmoyR;Vclusters;maxdct];
+
+inputSoustraction_i_avecDernierEchant = int16(inputSoustraction_i_avecDernierEchant.*double(32767/maxdct));
+
+input=[entete;inputSoustraction_i_avecDernierEchant];
+</pre><h2>ETAPE 5 : Ecriture des donnees compressees<a name="8"></a></h2><pre class="codeinput">fileID = fopen(<span class="string">'input.wav'</span>,<span class="string">'w'</span>);
+InputD = fwrite(fileID,input,<span class="string">'int16'</span>);
+fclose(fileID);
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clear all
+close all
+clc
+%% Compression Audio PAO 2017: BAERT Gaetan, QUEFFELEC Octave
+%% Etapes Compression
+%% ETAPE 1 : CHROMA
+filename = 'AC_DC_Back_In_Black_Official_Video_.wav';
+[f_audio,sideinfo] = wav_to_audio('', '', filename);
+[donnees, fs]=audioread(filename);
+
+shiftFB = estimateTuning(f_audio,[],sideinfo);
+
+paramPitch.winLenSTMSP = 4410;
+paramPitch.shiftFB = shiftFB;
+paramPitch.visualize = 0;
+[f_pitch,sideinfo] = ...fft.wav
+audio_to_pitch_via_FB(f_audio,paramPitch,sideinfo);
+
+paramCP.applyLogCompr = 0;
+paramCP.visualize = 0;
+paramCP.inputFeatureRate = sideinfo.pitch.featureRate;
+[f_CP,sideinfo] = pitch_to_chroma(f_pitch,paramCP,sideinfo);
+
+paramCLP.applyLogCompr = 1;
+paramCLP.factorLogCompr = 100;
+paramCLP.visualize = 0;
+paramCLP.inputFeatureRate = sideinfo.pitch.featureRate;
+[f_CLP,sideinfo] = pitch_to_chroma(f_pitch,paramCLP,sideinfo);
+
+paramCENS.winLenSmooth = 21;
+paramCENS.downsampSmooth = 5;
+paramCENS.visualize = 1;
+paramCENS.inputFeatureRate = sideinfo.pitch.featureRate;
+[f_CENS,sideinfo] = pitch_to_CENS(f_pitch,paramCENS,sideinfo);
+
+%% ETAPE 2 : clustering EM
+nbclusters = 12;
+X =f_CENS' ;
+
+dim = size(X, 2);
+covar_type = 'full'; %tout l'echange mais sans alterer les flux i% 'diag', 'spherical'=une seule variance of 'full'=matrice pleine
+
+% Creation du modele 
+mixgauss = gmm(dim, nbclusters, covar_type);
+
+% Options pour le GMM
+options = foptions; 
+options(1) = 0; % affichage (1) ou non (0) au fil des iterations
+
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH- Initialisation REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+initKmeans = 1; % 1 on initialise avec quelques iterations de K-means
+if initKmeans
+    % Initialisation des centres via Kmeans, les matrices de covariance
+    % sont calculees de fa???on correspondante
+    options(14) = 2; % 
+    mixgauss = gmminit(mixgauss, X, options);
+    
+else
+    % initialisation aleatoire des centres, les matrices de covariance = I
+    N = size(X, 1);
+    index = randperm(N);
+    mixgauss.centres = X(index(1:nbclusters), :);
+end
+
+
+% Trace des clusters et centres initiaux 
+M = distancegen(X, mixgauss.centres);
+clusters = affectation(X,mixgauss.centres,nbclusters);
+
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH- Algo EM REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+options(14) = 150; % A single iteration
+[mixgauss, ~, logvraisemblance] = gmmem(mixgauss, X, options);
+figure(2) 
+plot(logvraisemblance, '*REPLACE_WITH_DASH_DASH'), title('EM : Evolution de la log vraisemblance')
+
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH- Affectation finale des points aux clusters REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+% calcul des proba a posteriori
+probapost = gmmpost(mixgauss, X);
+% affectationtout l'??change mais sans alt??rer les flux i
+[~, clusters] = max(probapost, [],2);
+
+% Plot des clusters 
+n=size(clusters,1);
+figure();
+title('EM : 10 clusters')
+xlabel('morceau echantillon?')
+ylabel('numero des clusters')
+hold on
+for i=1:n
+    plot(i,clusters(i),'*r');
+end
+hold off
+%% ETAPE 3 : Compression en appliquant la dct 
+nbechant = size(X, 1);
+resteDernierEchant=rem(max(length(donnees)),nbechant-1);
+tailleEchant=int64(floor(max(length(donnees-resteDernierEchant))/(nbechant-1)));
+resteDernierEchant = max(length(donnees))-tailleEchant*(nbechant-1);
+
+%Matrice d'echantillons 
+for i=1:2:2*(nbechant-1)
+    Echant(:,i)=donnees(((i-1)/2)*tailleEchant+1:((i+1)/2)*tailleEchant,1);
+    Echant(:,i+1)=donnees(((i-1)/2)*tailleEchant+1:((i+1)/2)*tailleEchant,2);
+end
+
+dernierEchant=donnees(max(length(donnees))-resteDernierEchant+1:length(donnees),:);
+inputSoustraction_i=[];
+Mmoy=[];
+clusters=clusters(1:length(clusters)-1); % on prend pas en compte le dernier cluster du dernier echant qui est incomplet 
+clustersLR=[];
+
+for i=1:length(clusters)
+    clustersLR=[clustersLR;clusters(i);clusters(i)];
+end
+
+for i =1:nbclusters
+% on choisis un cluster 
+cluster_i=(dct(Echant(:,find(clustersLR==i))));
+
+% calcul du vecteur moyenne dans ce cluster
+moyCluster_i = mean(cluster_i,2);  
+Mmoy=[Mmoy moyCluster_i];
+
+% soustraction entre moyenne et chaque echant du cluster 
+soustraction_i=cluster_i-(ones(1,size(cluster_i,2))'*moyCluster_i')';
+
+% on concatene tous les chantillons en un seul vecteur
+inputSoustraction_i=[inputSoustraction_i; reshape(soustraction_i,[],1)];
+end
+
+% on ajoute le dernier echantillon incomplet sans rien modifier
+inputSoustraction_i_avecDernierEchant=[inputSoustraction_i; dct(dernierEchant(:,1));dct(dernierEchant(:,2))];
+%% ETAPE 4 : Entete du fichier compresse
+freq=int16([fs]);
+nechant=int16([nbechant]);
+taillech=int16([tailleEchant]);
+nbclusters=int16([nbclusters]);
+maxdct = max(int16(ceil(max(max(inputSoustraction_i_avecDernierEchant)))),int16(ceil(max(max(Mmoy)))));
+MmoyR=int16([(reshape(Mmoy,[],1))*double(32767/maxdct)]);
+Vclusters=int16([clustersLR]);
+
+entete=[freq;nechant;taillech;nbclusters;MmoyR;Vclusters;maxdct];
+
+inputSoustraction_i_avecDernierEchant = int16(inputSoustraction_i_avecDernierEchant.*double(32767/maxdct));
+
+input=[entete;inputSoustraction_i_avecDernierEchant];
+%% ETAPE 5 : Ecriture des donnees compressees
+fileID = fopen('input.wav','w');
+InputD = fwrite(fileID,input,'int16');
+fclose(fileID);
+##### SOURCE END #####
+--></body></html>

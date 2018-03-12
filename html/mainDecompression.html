@@ -1,0 +1,216 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Compression Audio PAO 2017: BAERT Gaetan, QUEFFELEC Octave</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-30"><meta name="DC.source" content="mainDecompression.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Compression Audio PAO 2017: BAERT Gaetan, QUEFFELEC Octave</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Etapes Decompression</a></li><li><a href="#2">ETAPE 1: Lecture fichier a decompresser</a></li><li><a href="#3">ETAPE 2 : Recuperation entete</a></li><li><a href="#4">ETAPE 3 : Recuperation donnees compressees</a></li><li><a href="#5">ETAPE 4 : Transformation des donnees par passage a la dct inverse et restitution de l'ordre initial des echantillons</a></li><li><a href="#6">ETAPE 5 : Decomposition en 2 canaux L &amp; R</a></li><li><a href="#7">ETAPE 6: Ecriture des donnees</a></li><li><a href="#8">ETAPE 7: Evaluation de la perte d'information</a></li></ul></div><h2>Etapes Decompression<a name="1"></a></h2><h2>ETAPE 1: Lecture fichier a decompresser<a name="2"></a></h2><pre class="codeinput">filenameD=<span class="string">'input.wav'</span>;
+fileID = fopen(filenameD);
+InputDD = int16(fread(fileID,<span class="string">'int16'</span>));
+fclose(fileID);
+</pre><h2>ETAPE 2 : Recuperation entete<a name="3"></a></h2><pre class="codeinput">InputD=InputDD;
+freqD=double(InputDD(1));
+nechantD=double(InputDD(2));
+taillechD=InputDD(3);
+taillechD=int32(taillechD);
+nbclustersD=double(InputDD(4));
+maxdctD=InputDD(nbclustersD*taillechD+5+2*(nechantD-1));
+
+MmoyDD=InputDD(5:double(nbclustersD)*double(taillechD)+4);
+MmoyD=[reshape(MmoyDD,taillechD,nbclustersD)];
+MmoyD = double(MmoyD)*double(double(maxdctD)/32767);
+taillechD=double(taillechD);
+VclustersD=InputDD(nbclustersD*taillechD+5:nbclustersD*taillechD+5+2*(nechantD-1)-1);
+</pre><h2>ETAPE 3 : Recuperation donnees compressees<a name="4"></a></h2><pre class="codeinput">inputSoustraction_iD=InputDD(nbclustersD*taillechD+5+2*(nechantD-1)+1:length(InputDD));
+inputSoustraction_iD=double(inputSoustraction_iD)*double(double(maxdctD)/32767);
+
+<span class="comment">%recuperation dernier echantillon</span>
+dernierEchantSansidctD=inputSoustraction_iD(2*(nechantD-1)*taillechD+1:length(inputSoustraction_iD));
+inputsoustraction_i_SansDernierEchantD=inputSoustraction_iD(1:2*(nechantD-1)*taillechD);
+dernierEchantD(:,1)=idct(dernierEchantSansidctD(1:length(dernierEchantSansidctD)/2));
+dernierEchantD(:,2)=idct(dernierEchantSansidctD(length(dernierEchantSansidctD)/2+1:length(dernierEchantSansidctD)));
+</pre><h2>ETAPE 4 : Transformation des donnees par passage a la dct inverse et restitution de l'ordre initial des echantillons<a name="5"></a></h2><p>on preleve les blocs d'echant d'un meme cluster de inputsouc1DSansDernier</p><pre class="codeinput">output=[];
+EchantD=[];
+inputsoustraction_i_DSansDernierEchantD=inputsoustraction_i_SansDernierEchantD;
+<span class="keyword">for</span> i =1:nbclustersD
+    nbEchCluster=length(find(VclustersD ==i));
+
+    cluster_i=inputsoustraction_i_DSansDernierEchantD(1:nbEchCluster*taillechD);
+    inputsoustraction_i_DSansDernierEchantD=inputsoustraction_i_DSansDernierEchantD(nbEchCluster*taillechD+1:length(inputsoustraction_i_DSansDernierEchantD)); <span class="comment">% on supprime les donnes dans inputsouc1DSansDernier uns fois trait?</span>
+
+    <span class="comment">% on forme une matrice d'echant du cluster</span>
+    Mcluster_i=reshape(cluster_i,taillechD,nbEchCluster);
+
+    <span class="comment">%on additionne la moyenne du cluster pour retrouver les donnees</span>
+    <span class="comment">%initiales</span>
+    MmoyD_i=MmoyD(:,i);
+    addition=idct(Mcluster_i+(ones(1,size(Mcluster_i,2))'*MmoyD_i')');
+
+    <span class="comment">%on fais correspondre les echantillons a leur position exacte dans le fichier</span>
+    <span class="comment">%origine</span>
+    indiceDonneeCluster=find(VclustersD==i);
+    <span class="keyword">for</span> j=1:nbEchCluster
+        <span class="keyword">if</span> rem(indiceDonneeCluster(j),2) &gt; 0.1
+            EchantD_L(:,(indiceDonneeCluster(j)+1)/2)=addition(:,j);
+        <span class="keyword">else</span>
+            EchantD_R(:,indiceDonneeCluster(j)/2)=addition(:,j);
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><h2>ETAPE 5 : Decomposition en 2 canaux L &amp; R<a name="6"></a></h2><pre class="codeinput">LL=reshape(EchantD_L,[],1);
+RR=reshape(EchantD_R,[],1);
+<span class="comment">% on ajoute le dernier echant</span>
+L=[LL;dernierEchantD(:,1)];
+R=[RR;dernierEchantD(:,2)];
+
+output=[L R];
+</pre><h2>ETAPE 6: Ecriture des donnees<a name="7"></a></h2><pre class="codeinput">audiowrite(<span class="string">'output.wav'</span>,output,freqD);
+</pre><h2>ETAPE 7: Evaluation de la perte d'information<a name="8"></a></h2><pre class="codeinput">figure()
+plot(donnees-output);
+title(<span class="string">'Quantite de perte entre compression et decompression'</span>)
+</pre><img vspace="5" hspace="5" src="mainDecompression_01.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Compression Audio PAO 2017: BAERT Gaetan, QUEFFELEC Octave
+%% Etapes Decompression
+%% ETAPE 1: Lecture fichier a decompresser 
+
+filenameD='input.wav';
+fileID = fopen(filenameD);
+InputDD = int16(fread(fileID,'int16'));
+fclose(fileID);
+%% ETAPE 2 : Recuperation entete
+
+InputD=InputDD;
+freqD=double(InputDD(1));
+nechantD=double(InputDD(2));
+taillechD=InputDD(3);
+taillechD=int32(taillechD);
+nbclustersD=double(InputDD(4));
+maxdctD=InputDD(nbclustersD*taillechD+5+2*(nechantD-1));
+
+MmoyDD=InputDD(5:double(nbclustersD)*double(taillechD)+4);
+MmoyD=[reshape(MmoyDD,taillechD,nbclustersD)];
+MmoyD = double(MmoyD)*double(double(maxdctD)/32767);
+taillechD=double(taillechD);
+VclustersD=InputDD(nbclustersD*taillechD+5:nbclustersD*taillechD+5+2*(nechantD-1)-1);
+%% ETAPE 3 : Recuperation donnees compressees
+
+inputSoustraction_iD=InputDD(nbclustersD*taillechD+5+2*(nechantD-1)+1:length(InputDD));
+inputSoustraction_iD=double(inputSoustraction_iD)*double(double(maxdctD)/32767);
+
+%recuperation dernier echantillon 
+dernierEchantSansidctD=inputSoustraction_iD(2*(nechantD-1)*taillechD+1:length(inputSoustraction_iD));
+inputsoustraction_i_SansDernierEchantD=inputSoustraction_iD(1:2*(nechantD-1)*taillechD);
+dernierEchantD(:,1)=idct(dernierEchantSansidctD(1:length(dernierEchantSansidctD)/2));
+dernierEchantD(:,2)=idct(dernierEchantSansidctD(length(dernierEchantSansidctD)/2+1:length(dernierEchantSansidctD)));
+%% ETAPE 4 : Transformation des donnees par passage a la dct inverse et restitution de l'ordre initial des echantillons
+% on preleve les blocs d'echant d'un meme cluster de inputsouc1DSansDernier
+output=[];
+EchantD=[];
+inputsoustraction_i_DSansDernierEchantD=inputsoustraction_i_SansDernierEchantD;
+for i =1:nbclustersD
+    nbEchCluster=length(find(VclustersD ==i));
+
+    cluster_i=inputsoustraction_i_DSansDernierEchantD(1:nbEchCluster*taillechD);
+    inputsoustraction_i_DSansDernierEchantD=inputsoustraction_i_DSansDernierEchantD(nbEchCluster*taillechD+1:length(inputsoustraction_i_DSansDernierEchantD)); % on supprime les donnes dans inputsouc1DSansDernier uns fois trait?
+    
+    % on forme une matrice d'echant du cluster 
+    Mcluster_i=reshape(cluster_i,taillechD,nbEchCluster);
+    
+    %on additionne la moyenne du cluster pour retrouver les donnees
+    %initiales
+    MmoyD_i=MmoyD(:,i);
+    addition=idct(Mcluster_i+(ones(1,size(Mcluster_i,2))'*MmoyD_i')');
+    
+    %on fais correspondre les echantillons a leur position exacte dans le fichier
+    %origine
+    indiceDonneeCluster=find(VclustersD==i);
+    for j=1:nbEchCluster
+        if rem(indiceDonneeCluster(j),2) > 0.1
+            EchantD_L(:,(indiceDonneeCluster(j)+1)/2)=addition(:,j);
+        else
+            EchantD_R(:,indiceDonneeCluster(j)/2)=addition(:,j);
+        end
+    end
+end
+%% ETAPE 5 : Decomposition en 2 canaux L & R 
+
+LL=reshape(EchantD_L,[],1);
+RR=reshape(EchantD_R,[],1);
+% on ajoute le dernier echant
+L=[LL;dernierEchantD(:,1)];
+R=[RR;dernierEchantD(:,2)];
+
+output=[L R];
+%% ETAPE 6: Ecriture des donnees 
+audiowrite('output.wav',output,freqD);
+
+%% ETAPE 7: Evaluation de la perte d'information 
+figure()
+plot(donnees-output);
+title('Quantite de perte entre compression et decompression')
+
+##### SOURCE END #####
+--></body></html>
